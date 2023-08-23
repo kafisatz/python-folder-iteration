@@ -24,6 +24,7 @@ iterators: List[FolderIterator] = [iterator() for iterator in [GlobFolderIterato
                                                                PathLibFolderIterator]]
 
 LEVELS = 6
+LEVELS = 2
 FOLDER_COUNT = 6
 FILE_COUNT_BY_FOLDER = 20
 FILES_COUNT = 0
@@ -48,8 +49,8 @@ def _create_sample_folder():
 def _memory(start: bool) -> dict:
     m = PROCESS.memory_info()
     result = dict(rss=m.rss,
-                  vms=m.vms,
-                  data=m.data)
+                  vms=m.vms)#,
+                  #data=m.data)
 
     if start:
         globals()['MEMORY'] = result
@@ -57,7 +58,7 @@ def _memory(start: bool) -> dict:
         m = globals()['MEMORY']
         result['rss_delta'] = result['rss']-m['rss']
         result['vms_delta'] = result['vms']-m['vms']
-        result['data_delta'] = result['data']-m['data']
+        #result['data_delta'] = result['data']-m['data']
 
     return result
 
@@ -88,18 +89,18 @@ def main():
                 0,
                 datetime.timedelta(seconds=first_file_available-start_time),
                 memory_result['rss_delta'],
-                memory_result['vms_delta'],
-                memory_result['data_delta']])
+                memory_result['vms_delta']])#,
+                #memory_result['data_delta']])
         print()
         print(' MEMORY USAGE '.center(40, '#'))
-        table_memory = [[r[0], r[4], r[5], r[6]]
+        table_memory = [[r[0], r[4], r[5]]#, r[6]]
                         for r in sorted(table, key=lambda row:row[4])]
         print(tabulate.tabulate(table_memory,
-                                headers=['Iterator', 'RSS', 'VMS', 'DATA'],
+                                headers=['Iterator', 'RSS', 'VMS'],#, 'DATA'],
                                 tablefmt=TABLEFMT))
 
         _print_table('ELAPSED TIME', table, 1, 'Elapsed time')
-        _print_table('TIME FOR FIRST FILE', table, 3, 'Elapsed time')
+        _print_table('TIME FOR FIRST FILE', table, 2, 'Elapsed time')
 
     finally:
         start_time = time()
